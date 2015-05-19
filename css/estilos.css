@@ -1,0 +1,241 @@
+/* Estilos personalizados */
+
+body {
+	background-color: #002741;
+}
+
+header {
+	position: relative;
+	padding: 20px 0;
+	min-height: 140px;
+	background: url("../images/ch_fondo.png") #FFFFFF no-repeat 500px -190px;
+	box-shadow: 0 8px 8px -6px #808080;
+	z-index: 90;
+}
+
+header .container {
+	display: flex;
+	align-items: center;
+	min-height: 120px !important;
+	background: none;
+}
+
+.container {
+	min-height: 380px;
+	height: auto !important;
+	background-color: #FFFFFF;
+}
+
+.container form {
+	padding: 0 20px;
+	clear: both;
+}
+
+footer.container {
+	min-height: auto;
+	height: auto !important;
+	padding: 20px 20px 0;
+	background: none #DCDCDC;
+	color: #666666;
+	font-size: 12px;
+}
+
+div.botones {
+	margin: 35px 0 45px;
+	text-align: center;
+}
+
+div.botones .btn-primary {
+	background-color: #002741;
+}
+
+div.titulo {
+	position: relative;
+	min-height: 104px;
+}
+
+h3.titulo {
+	padding: 35px 17px 12px;
+	margin-top: 0px;
+	background-color: #E3E7ED;
+	color: #002741;
+	font-size: 26px;
+	letter-spacing: 1px;
+}
+
+div.salir {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	padding-left: 30px;
+}
+
+div.salir * {
+	display: block;
+}
+
+div.salir img {
+	margin-left: 3px;
+}
+
+div.salir a {
+	color: #002741;
+}
+
+.nav-tabs {
+    border-color: #002741;
+}
+
+.nav-tabs > li > a {
+    font-size: 12px;
+    color: #002741;
+    border-radius: 0px;
+}
+
+.nav-tabs > li > a:hover {
+	background-color: #E3E7ED;
+	border-bottom: 1px #002741 solid;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+	background-color: #002741;
+	color: #FFFFFF;
+}
+
+.tab-pane > h4.panel-title {
+	margin: 20px 0;
+}
+
+.panel-default > .panel-heading {
+	background-color: #627899;
+	color: #FFFFFF;
+}
+
+.panel-default > .panel-heading .panel-title img {
+	margin-top: 4px;
+	float: right;
+	transition: all 0.5s ease;
+}
+
+.panel-default > .panel-heading .expandido {
+	transform: rotate(-180deg);
+}
+
+.panel-default > .panel-heading .colapsado {
+	transform: rotate(0deg);
+}
+	
+.panel-footer {
+	/*background-color: #d9edf7;*/
+}
+
+div.ponderacion {
+	float: none;
+	margin: auto;
+}
+
+.ponderacion > p {
+	padding: 8px 0;
+	margin-bottom: 0;
+    font-size: 17px;
+    background-color: #627899;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.ponderacion table {
+	border: 1px solid #DDDDDD;
+}
+
+.ponderacion table th:first-of-type, .ponderacion table td:first-of-type {
+	text-align: right;
+}
+
+.ponderacion table.table-striped > tbody > tr:nth-of-type(2n+1) {
+	background-color: #E3E7ED;
+}
+
+.tab-content .table th {
+	background-color: #E3E7ED;
+	text-align: center;
+}
+
+.tab-content .table th:first-of-type {
+	text-align: left;
+}
+
+.tab-content .table td {
+	width: 12%;
+}
+
+.tab-content .table td:first-of-type {
+	width: 40%;
+}
+
+.table td {
+	font-size: 12px;
+	line-height: 19px !important;
+}
+
+.pregunta-titulo {
+	font-weight: bold;
+}
+
+
+/* Estilos pantalla login */
+.loginContainer {
+	display: table;
+	margin: auto;
+	float: none;
+}
+
+#formLogin {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#formLogin input {
+	text-align: center;
+}
+
+#formLogin #usuario {
+	margin-top: 20px;
+}
+
+#formLogin #password {
+	margin-top: 40px;
+}
+
+#formLogin .panel {
+	border: none;
+	border-radius: 0px;
+}
+
+#formLogin .panel-default {
+	background-color: #E3E7ED;
+}
+
+#formLogin .panel-footer {
+	padding: 0;
+}
+
+#formLogin .panel-footer .btn {
+	padding: 15px 0;
+	border-radius: 0px;
+}
+
+#formLogin .panel-footer .btn-primary {
+	background-color: #002741;
+}
+/* Fin login */
+
+
+/* Estilos para los errores */
+textarea.error {
+	border-color: #FF0000;
+}
+
+select.error {
+	border-color: #FF0000;
+}
+/* Fin errores */
