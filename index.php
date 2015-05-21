@@ -201,19 +201,64 @@ Flight::route('/guardarEvaluacion/', function() {
 	
 	foreach ( $secciones as $seccion ) {
 		if ( !$seccion->sub ) {
-			$query = "INSERT INTO respuesta(respuesta, evaluacion, seccion) VALUES(?, ?, ?)";
+			$resp = (isset($_POST['txt_'.$seccion->id_seccion.'_0'])) ? addslashes(utf8_decode($_POST['txt_'.$seccion->id_seccion.'_0'])) : "";
+			$id_resp = (isset($_POST['hdnt_'.$seccion->id_seccion.'_0'])) ? addslashes($_POST['hdnt_'.$seccion->id_seccion.'_0']) : "";
+			
+			if ( !$id_resp ) {
+				if ( $resp ) {
+					$query = "INSERT INTO respuesta(respuesta, evaluacion, seccion) VALUES(?, ?, ?)";
+					$stm = $con->prepare($query);
+					$stm->execute(array($resp, $id_evaluacion, $seccion->id_seccion));
+					echo $query."\n";
+				}
+			} else {
+				$query = "UPDATE respuesta SET respuesta = ? WHERE id_respuesta = ?";
+				$stm = $con->prepare($query);
+				$stm->execute(array($resp, $id_resp,));
+				echo $query."\n";
+			}
+		} else {
+			foreach ( $subsecciones as $subseccion ) {
+				$resp = (isset($_POST['txt_'.$seccion->id_seccion.'_'.$subseccion->id_subseccion])) ? addslashes(utf8_decode($_POST['txt_'.$seccion->id_seccion.'_'.$subseccion->id_subseccion])) : "";
+				$id_resp = (isset($_POST['hdnt_'.$seccion->id_seccion.'_'.$subseccion->id_subseccion])) ? addslashes($_POST['hdnt_'.$seccion->id_seccion.'_'.$subseccion->id_subseccion]) : "";
+					
+				if ( !$id_resp ) {
+					if ( $resp ) {
+						$query = "INSERT INTO respuesta(respuesta, evaluacion, seccion, subseccion) VALUES(?, ?, ?, ?)";
+						$stm = $con->prepare($query);
+						$stm->execute(array($resp, $id_evaluacion, $seccion->id_seccion, $subseccion->id_subseccion));
+						echo $query."\n";
+					}
+				} else {
+					$query = "UPDATE respuesta SET respuesta = ? WHERE id_respuesta = ?";
+					$stm = $con->prepare($query);
+					$stm->execute(array($resp, $id_resp,));
+					echo $query."\n";
+				}
+			}
 		}
 	}
 	
 	foreach ( $preguntas as $pregunta ) {
 		foreach ( $proveedores as $proveedor ) {
-			//${}
+			$resp = (isset($_POST['cmb_'.$pregunta->id_pregunta.'_'.$proveedor->id_proveedor])) ? addslashes($_POST['cmb_'.$pregunta->id_pregunta.'_'.$proveedor->id_proveedor]) : "";
+			$id_resp = (isset($_POST['hdnc_'.$pregunta->id_pregunta.'_'.$proveedor->id_proveedor])) ? addslashes($_POST['hdnc_'.$pregunta->id_pregunta.'_'.$proveedor->id_proveedor]) : "";
+			
+			if ( !$id_resp ) {
+				if ( $resp ) {
+					$query = "INSERT INTO respuesta(respuesta, evaluacion, pregunta, proveedor) VALUES(?, ?, ?, ?)";
+					$stm = $con->prepare($query);
+					$stm->execute(array($resp, $id_evaluacion, $pregunta->id_pregunta, $proveedor->id_proveedor));
+					echo $query."\n";
+				}
+			} else {
+				$query = "UPDATE respuesta SET respuesta = ? WHERE id_respuesta = ?";
+				$stm = $con->prepare($query);
+				$stm->execute(array($resp, $id_resp,));
+				echo $query."\n";
+			}
 		}
 	}
-	
-	
-	
-	print_r($_POST);
 });
 
 /* Se inicializa el framework */

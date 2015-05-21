@@ -125,6 +125,10 @@
 										<option value="D"
 											<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "D") {echo 'selected="selected"';}?>>Desconocido</option>
 									</select>
+									<input type="hidden" 
+										id="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
+										name="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
+										value="<?php echo ( (isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor])) ? $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['id_respuesta'] : ""); ?>" />
 								</td>
             			<?php
 							}
@@ -146,7 +150,11 @@
 							<textarea
 								id="txt_<?php echo $seccion->id_seccion."_".$subseccion->id_subseccion; ?>"
 								name="txt_<?php echo $seccion->id_seccion."_".$subseccion->id_subseccion; ?>"
-								rows="3" class="form-control"><?php echo ( (isset($observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion])) ? $observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion]['respuesta'] : ""); ?></textarea>
+								rows="3" class="form-control"><?php echo ( (isset($observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion])) ? utf8_encode($observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion]['respuesta']) : ""); ?></textarea>
+							<input type="hidden" 
+								id="hdnt_<?php echo $seccion->id_seccion."_".$subseccion->id_subseccion; ?>"
+								name="hdnt_<?php echo $seccion->id_seccion."_".$subseccion->id_subseccion; ?>"
+								value="<?php echo ( (isset($observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion])) ? $observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion]['id_respuesta'] : ""); ?>" />
 						</div>
 					</div>
 				</div>
@@ -193,6 +201,10 @@
 							<option value="D"
 								<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "D") {echo 'selected="selected"';}?>>Desconocido</option>
 					</select>
+					<input type="hidden" 
+						id="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
+						name="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
+						value="<?php echo ( (isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor])) ? $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['id_respuesta'] : ""); ?>" />
 				</td>
             	<?php
 				}
@@ -207,7 +219,11 @@
 		<label>Observaciones:</label>
 		<textarea id="txt_<?php echo $seccion->id_seccion."_0"; ?>"
 			name="txt_<?php echo $seccion->id_seccion."_0"; ?>" rows="3"
-			class="form-control"><?php echo ( (isset($observaciones[$seccion->id_seccion."_0"])) ? $observaciones[$seccion->id_seccion."_0"]['respuesta'] : ""); ?></textarea>
+			class="form-control"><?php echo ( (isset($observaciones[$seccion->id_seccion."_0"])) ? utf8_encode($observaciones[$seccion->id_seccion."_0"]['respuesta']) : ""); ?></textarea>
+		<input type="hidden" 
+			id="hdnt_<?php echo $seccion->id_seccion."_0"; ?>" 
+			name="hdnt_<?php echo $seccion->id_seccion."_0"; ?>" 
+			value="<?php echo ( (isset($observaciones[$seccion->id_seccion."_0"])) ? $observaciones[$seccion->id_seccion."_0"]['id_respuesta'] : ""); ?>" />
     <?php
 	}
 	?>
