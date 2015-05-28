@@ -1,0 +1,183 @@
+body, html {
+	font-family: arial, sans-serif;
+	font-size: 10pt;
+}
+
+body {
+	background-image: url("../images/fondo_pdf.jpg");
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+footer {
+	font-family: calibri, arial; sans-serif;
+	font-size: 8pt;
+	color: #646464;
+}
+
+footer p {
+	text-align: center;
+}
+
+footer .numeracion {
+	text-align: right;
+}
+
+table {
+	border: 0.5pt solid #000000;
+	border-collapse: collapse;
+}
+
+th {
+	padding: 4pt 0;
+	background-color: #002753;
+	color: #FFFFFF;
+	font-weight: normal;
+	font-size: 8pt;
+}
+
+td {
+	width: 60pt;
+	border: 0.5pt solid #000000;
+	font-size: 8pt;
+	line-height: 13pt;
+	text-align: center;
+}
+
+td.izq {
+	width: 240pt;
+	padding: 5pt 8pt;
+	text-align: left;
+}
+
+td.puntos {
+	background-color: #627899;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+td.observaciones {
+	background-color: #E3E7ED;
+}
+
+h4 {
+	padding-left: 7pt;
+	font-weight: normal;
+	font-size: 12pt;
+	color: #002753;
+}
+
+h5 {
+	padding-bottom: 2pt;
+	border-bottom-width: 1pt;
+	border-bottom-style: solid;
+	border-bottom-color: #627899;
+	font-weight: normal;
+	font-size: 11pt;
+	color: #002753;
+}
+
+ol, li {
+	margin: 0pt;
+	padding: 0pt;
+}
+
+ol.seccion li {
+	padding-left: 22pt;
+}
+
+ol.subseccion li {
+	padding-left: 15pt;
+}
+
+#logo-conricyt {
+	float: left;
+	width: 70pt;
+}
+
+#logo-conacyt {
+	float: right;
+	width: 65pt;
+}
+
+.fin {
+	clear: both;
+}
+
+.firmas {
+	padding-top: 60pt;
+}
+
+.firma-div {
+	width: 33%;
+	float: left;
+	margin-bottom: 90pt;
+}
+
+.firma {
+	display: block;
+	margin: auto;
+	padding-top: 5pt;
+	width: 90%;
+	border-top-width: 1pt;
+	border-top-style: solid;
+	border-top-color: #000000;
+	font-size: 8pt;
+	text-align: center;
+}
+
+.firma .nombre {
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+.ponderacion {
+	width: 80%;
+	margin: auto;
+	border-color: #DDDDDD;
+	background-color: #FFFFFF;
+}
+
+.ponderacion .titulo-tabla {
+	padding: 4pt 0;
+	background-color: #627899;
+	font-size: 10pt;
+	color: #FFFFFF;
+	text-align: center;
+}
+
+.ponderacion th {
+	background-color: #E3E7ED;
+	color: #000000;
+	font-weight: bold;
+	font-size: 9pt;
+	text-align: left;
+}
+
+.ponderacion th.izq {
+	padding-right: 7pt;
+	text-align: right;
+}
+
+.ponderacion td {
+	width: auto;
+	text-align: left;
+	border: none;
+}
+
+.ponderacion td.izq {
+	font-weight: bold;
+	text-align: right;
+}
+
+.ponderacion td.sombreado {
+	background-color: #E3E7ED;
+}
+
+.titulo {
+	background-color: #E3E7ED;
+    color: #002741;
+    font-size: 16pt;
+    margin: 0;
+    padding: 10pt 7pt 2pt;
+}

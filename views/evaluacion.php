@@ -1,4 +1,15 @@
-<div></div>
+<?php
+if ( $evaluacion->fecha_finalizacion ) {
+?>
+<script type="text/javascript">
+$(function() {
+	$("textarea, select").prop("disabled", "disabled");
+});
+</script>
+<?php
+}
+?>
+
 <div class="titulo">
 	<h3 class="titulo col-sm-10 col-sm-offset-1">Formato de Evaluación de Propuestas<br />Técnicas, de Servicios y Económicas</h3>
 	<div class="salir col-sm-1"><a href="/salir"><img src="../images/salida.png" />Salir</a></div>
@@ -80,7 +91,8 @@
 								aria-expanded="<?php echo ( ($subseccion->id_subseccion == 1 || $subseccion->id_subseccion == 19) ? 'true' : 'false' ); ?>"
 								aria-controls="collapse<?php echo $subseccion->id_subseccion; ?>">
 					          <?php echo utf8_encode($subseccion->nombre); ?>
-					        </a><img src="../images/flecha.png" class="<?php echo ( ($subseccion->id_subseccion == 1 || $subseccion->id_subseccion == 19) ? 'expandido' : 'colapsado' ); ?>" />
+					        	<img src="../images/flecha.png" class="<?php echo ( ($subseccion->id_subseccion == 1 || $subseccion->id_subseccion == 19) ? 'expandido' : 'colapsado' ); ?>" />
+					        </a>
 						</h4>
 					</div>
 					<div id="collapse<?php echo $subseccion->id_subseccion; ?>"
@@ -235,9 +247,14 @@
 	<!-- Fin de contenido de tabs -->
 
 	<div class="botones">
-		<input type="button" id="btnGuardar" value="Guardar cambios"
-			class="btn btn-primary" /> <input type="button" id="btnFinalizar"
-			value="Finalizar evaluación" class="btn btn-primary" />
+	<?php
+	if ( !$evaluacion->fecha_finalizacion ) {
+	?>
+		<input type="button" id="btnGuardar" value="Guardar cambios" class="btn btn-primary" /> 
+		<input type="button" id="btnFinalizar" value="Finalizar evaluación" class="btn btn-primary" />
+	<?php
+	}
+	?>
 	</div>
 </form>
 

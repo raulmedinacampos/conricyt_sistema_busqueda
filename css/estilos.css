@@ -155,6 +155,32 @@ div.ponderacion {
 	background-color: #E3E7ED;
 }
 
+div.resultados {
+	float: none;
+	margin: 30px auto 0;
+}
+
+.resultados > p {
+	padding: 8px 0;
+	margin-bottom: 0;
+    font-size: 17px;
+    background-color: #627899;
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.resultados table {
+	border: 1px solid #DDDDDD;
+}
+
+.resultados table th:last-of-type, .resultados table td:last-of-type {
+	text-align: center;
+}
+
+.resultados table.table-striped > tbody > tr:nth-of-type(2n+1) {
+	background-color: #E3E7ED;
+}
+
 .tab-content .table th {
 	background-color: #E3E7ED;
 	text-align: center;
@@ -231,11 +257,8 @@ div.ponderacion {
 
 
 /* Estilos para los errores */
-textarea.error {
+select.error, textarea.error {
 	border-color: #FF0000;
-}
-
-select.error {
-	border-color: #FF0000;
+	color: #FF0000;
 }
 /* Fin errores */

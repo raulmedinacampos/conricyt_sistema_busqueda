@@ -39,15 +39,25 @@ function validarFormulario() {
 				'guardarEvaluacion',
 				$("#formEvaluacion").serialize(),
 				function(data) {
-					alert(data);
+					$("#notificaciones .modal-title").html("Datos guardados");
+					$("#notificaciones .modal-body").html("La información de tu evaluación ha sido guardada.");
+					$("#notificaciones").modal('show');
 				}
 		);
 	})
 	
 	$("#btnFinalizar").click(function() {
 		if ( $("#formEvaluacion").valid() ) {
-			
+			$.post(
+					'finalizarEvaluacion',
+					$("#formEvaluacion").serialize(),
+					function(data) {
+						location.reload();
+					}
+			);
 		} else {
+			$("#notificaciones .modal-title").html("Revisa el formulario");
+			$("#notificaciones .modal-body").html("Falta completar algún campo del formulario. Revísalo cuidadosamente.");
 			$("#notificaciones").modal('show');
 		}
 	});
