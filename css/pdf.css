@@ -105,20 +105,14 @@ ol.subseccion li {
 }
 
 .firmas {
-	padding-top: 60pt;
-}
-
-.firma-div {
-	width: 33%;
-	float: left;
-	margin-bottom: 90pt;
+	padding-top: 120pt;
 }
 
 .firma {
 	display: block;
 	margin: auto;
 	padding-top: 5pt;
-	width: 90%;
+	width: 33%;
 	border-top-width: 1pt;
 	border-top-style: solid;
 	border-top-color: #000000;

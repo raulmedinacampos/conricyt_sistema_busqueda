@@ -7,14 +7,14 @@
     
 <title>Evaluación de los sistemas de descubrimiento</title>
 <!-- Hojas de estilos -->
-<link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="../css/bootstrap.min.css" />
 <link rel="stylesheet" href="../css/estilos.css" />
 
 <!-- Scrips de JS -->
-<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/jquery.validate.min.js"></script>
-<script type="text/javascript" src="js/evaluacion.js"></script>
+<script type="text/javascript" src="../js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../js/jquery.validate.min.js"></script>
+<script type="text/javascript" src="../js/evaluacion.js"></script>
 </head>
 
 <body>

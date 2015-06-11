@@ -1,5 +1,5 @@
 <div class="titulo">
-	<h3 class="titulo col-sm-10 col-sm-offset-1">Formato de Evaluación de Propuestas<br />Técnicas, de Servicios y Económicas</h3>
+	<h3 class="titulo col-sm-10 col-sm-offset-1">Evaluación de Propuestas Técnicas, de Servicios y Económicas</h3>
 	<div class="salir col-sm-1"><a href="/salir"><img src="../images/salida.png" />Salir</a></div>
 </div>
 
@@ -22,7 +22,7 @@
   <tr>
   	<td><?php echo $i; ?></td>
     <td><?php echo trim(utf8_encode($usuario->grado." ".$usuario->nombre." ".$usuario->ap_paterno." ".$usuario->ap_materno)); ?></td>
-    <td><a href="imprimirEvaluacion/<?php echo $usuario->id_evaluacion; ?>"><span class="glyphicon glyphicon-circle-arrow-down text-primary"></span></a></td>
+    <td><a href="imprimirEvaluacion/<?php echo $usuario->id_evaluacion; ?>"><span class="glyphicon glyphicon-file"></span></a></td>
   </tr>
   <?php
   	}

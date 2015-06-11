@@ -181,6 +181,10 @@ div.resultados {
 	background-color: #E3E7ED;
 }
 
+.resultados .glyphicon {
+	color: #627899;
+}
+
 .tab-content .table th {
 	background-color: #E3E7ED;
 	text-align: center;
@@ -201,6 +205,16 @@ div.resultados {
 .table td {
 	font-size: 12px;
 	line-height: 19px !important;
+}
+
+.total td {
+	background-color: #E3E7ED;
+	text-align: center;
+	font-weight: bold;
+}
+
+.total td:first-of-type {
+	text-align: left;
 }
 
 .pregunta-titulo {

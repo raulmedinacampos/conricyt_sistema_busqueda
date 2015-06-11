@@ -4,7 +4,7 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 				<div class="form-group">
-					<input type="text"	name="usuario" id="usuario" placeholder="Correo electrónico" class="form-control" />
+					<input type="text"	name="usuario" id="usuario" placeholder="Usuario" class="form-control" />
 				</div>
 				<div class="form-group">
 					<input type="password" name="password" id="password" placeholder="Contraseña" class="form-control"/ >

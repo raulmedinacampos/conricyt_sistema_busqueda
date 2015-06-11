@@ -11,7 +11,7 @@ $(function() {
 ?>
 
 <div class="titulo">
-	<h3 class="titulo col-sm-10 col-sm-offset-1">Formato de Evaluación de Propuestas<br />Técnicas, de Servicios y Económicas</h3>
+	<h3 class="titulo col-sm-10 col-sm-offset-1">Evaluación de Propuestas Técnicas, de Servicios y Económicas</h3>
 	<div class="salir col-sm-1"><a href="/salir"><img src="../images/salida.png" />Salir</a></div>
 </div>
 
@@ -104,6 +104,7 @@ $(function() {
 								<th>&nbsp;</th>
 				            <?php
 								foreach ( $proveedores as $proveedor ) {
+									${"total_".$proveedor->id_proveedor} = 0;
 							?>
             					<th><?php echo $proveedor->nombre; ?></th>
 				            <?php
@@ -121,6 +122,17 @@ $(function() {
             			<?php
 						if (! $pregunta->titulo) {
 							foreach ( $proveedores as $proveedor ) {
+								$resp = (isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor])) ? $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] : '';
+								switch ( $resp ) {
+									case 'S':
+										${"total_".$proveedor->id_proveedor} += 2;
+										break;
+									case 'P':
+										${"total_".$proveedor->id_proveedor} += 1;
+										break;
+									default:
+										break;
+								}
 						?>
             					<td>
             						<select
@@ -155,6 +167,16 @@ $(function() {
 					}
 				}
 				?>
+						<tr class="total">
+							<td>Total de puntos:</td>
+							<?php
+							foreach ( $proveedores as $proveedor ) {
+							?>
+								<td><?php echo ${"total_".$proveedor->id_proveedor}; ?></td>
+							<?php
+							}
+							?>
+						</tr>
         				</table>
 
 						<div class="panel-body">
@@ -183,6 +205,7 @@ $(function() {
 				<th>&nbsp;</th>
             <?php
 			foreach ( $proveedores as $proveedor ) {
+				${"total_".$proveedor->id_proveedor} = 0;
 			?>
             	<th><?php echo $proveedor->nombre; ?></th>
             <?php
@@ -197,6 +220,17 @@ $(function() {
 				<td><?php echo utf8_encode($pregunta->pregunta); ?></td>
             	<?php
 				foreach ( $proveedores as $proveedor ) {
+					$resp = (isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor])) ? $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] : '';
+					switch ( $resp ) {
+						case 'S':
+							${"total_".$proveedor->id_proveedor} += 2;
+							break;
+						case 'P':
+							${"total_".$proveedor->id_proveedor} += 1;
+							break;
+						default:
+							break;
+					}
 				?>
             	<td>
             		<select
@@ -226,6 +260,16 @@ $(function() {
 			}
 		}
 		?>
+			<tr class="total">
+				<td>Total de puntos:</td>
+				<?php
+				foreach ( $proveedores as $proveedor ) {
+				?>
+					<td><?php echo ${"total_".$proveedor->id_proveedor}; ?></td>
+				<?php
+				}
+				?>
+			</tr>
         </table>
 
 		<label>Observaciones:</label>
