@@ -15,6 +15,27 @@ $(function() {
 	<div class="salir col-sm-1"><a href="/salir"><img src="../images/salida.png" />Salir</a></div>
 </div>
 
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">Inicio <span class="sr-only">(current)</span></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Ver resultados <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="detalle-evaluador">Detalle por evaluador</a></li>
+            <li><a href="concentrado">Resumen general</a></li>
+            <li><a href="resultado-propuesta-economica">Propuesta económica</a></li>
+          </ul>
+        </li>
+      </ul>
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<h3>Evaluación Técnica y de Servicios</h3>
+
 <p style="clear: both;">La evaluación de las propuestas técnicas, de servicios y económicas
 	estará sujeta a los rubros descritos y cotizados en el Formato de
 	Presentación de Propuestas Técnicas, de Servicio y Económicas</p>
@@ -78,6 +99,10 @@ $(function() {
 				id="accordion<?php echo $seccion->id_seccion; ?>" role="tablist"
 				aria-multiselectable="true">
      	<?php
+		foreach ( $proveedores as $proveedor ) {
+			${"t_".$proveedor->id_proveedor} = 0;
+		}
+									
 		foreach ( $subsecciones as $subseccion ) {
 			if ($subseccion->seccion == $seccion->id_seccion) {
 		?>
@@ -105,6 +130,7 @@ $(function() {
 				            <?php
 								foreach ( $proveedores as $proveedor ) {
 									${"total_".$proveedor->id_proveedor} = 0;
+									
 							?>
             					<th><?php echo $proveedor->nombre; ?></th>
 				            <?php
@@ -135,6 +161,9 @@ $(function() {
 								}
 						?>
             					<td>
+            					<?php
+            					if ( $proveedor->estatus > 0 ) {
+            					?>
             						<select
 									id="cmb_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>"
 									name="cmb_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>"
@@ -153,6 +182,11 @@ $(function() {
 										id="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
 										name="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
 										value="<?php echo ( (isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor])) ? $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['id_respuesta'] : ""); ?>" />
+								<?php
+            					} else {
+            						echo '<span class="invalido">Inválido</span>';
+            					}
+								?>
 								</td>
             			<?php
 							}
@@ -168,19 +202,23 @@ $(function() {
 				}
 				?>
 						<tr class="total">
-							<td>Total de puntos:</td>
+							<td>Subtotal por sección:</td>
 							<?php
 							foreach ( $proveedores as $proveedor ) {
+								if ( $proveedor->estatus > 0 ) {
 							?>
-								<td><?php echo ${"total_".$proveedor->id_proveedor}; ?></td>
+								<td><?php echo ${"total_".$proveedor->id_proveedor} ." / ".$subseccion->maximo; ${"t_".$proveedor->id_proveedor} += ${"total_".$proveedor->id_proveedor};?></td>
 							<?php
+								} else {
+									echo '<td><span class="invalido">Inválido</span></td>';
+								}
 							}
 							?>
 						</tr>
-        				</table>
-
+						</table>
+						
 						<div class="panel-body">
-							<label>Observaciones:</label>
+							<label>Comentarios:</label>
 							<textarea
 								id="txt_<?php echo $seccion->id_seccion."_".$subseccion->id_subseccion; ?>"
 								name="txt_<?php echo $seccion->id_seccion."_".$subseccion->id_subseccion; ?>"
@@ -196,6 +234,28 @@ $(function() {
 			}
 		}
 		?>
+			<table class="table table-striped table-condensed" style="margin-top: 10px;">
+				<tr>
+					<th>&nbsp;</th>
+					<?php
+					foreach ( $proveedores as $proveedor ) {
+					?>
+					<th><?php echo $proveedor->nombre; ?></th>
+					<?php
+					}
+					?>
+				</tr>
+				<tr class="total">
+					<td>Total por sección:</td>
+					<?php
+					foreach ( $proveedores as $proveedor ) {
+					?>
+					<td><?php echo ${"t_".$proveedor->id_proveedor}." / ".$seccion->maximo; ?></td>
+					<?php
+					}
+					?>
+				</tr>
+			</table>
       </div>
     <?php
 	} else {
@@ -233,6 +293,9 @@ $(function() {
 					}
 				?>
             	<td>
+            	<?php
+            	if ( $proveedor->estatus > 0 ) {
+            	?>
             		<select
 						id="cmb_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>"
 						name="cmb_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>"
@@ -251,6 +314,11 @@ $(function() {
 						id="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
 						name="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
 						value="<?php echo ( (isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor])) ? $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['id_respuesta'] : ""); ?>" />
+				<?php
+            	} else {
+            		echo '<span class="invalido">Inválido</span>';
+            	}
+				?>
 				</td>
             	<?php
 				}
@@ -261,18 +329,22 @@ $(function() {
 		}
 		?>
 			<tr class="total">
-				<td>Total de puntos:</td>
+				<td>Total por sección:</td>
 				<?php
 				foreach ( $proveedores as $proveedor ) {
+					if ( $proveedor->estatus > 0 ) {
 				?>
-					<td><?php echo ${"total_".$proveedor->id_proveedor}; ?></td>
+					<td><?php echo ${"total_".$proveedor->id_proveedor}." / ".$seccion->maximo; ?></td>
 				<?php
+					} else {
+						echo '<td><span class="invalido">Inválido</span></td>';
+					}
 				}
 				?>
 			</tr>
         </table>
 
-		<label>Observaciones:</label>
+		<label>Comentarios:</label>
 		<textarea id="txt_<?php echo $seccion->id_seccion."_0"; ?>"
 			name="txt_<?php echo $seccion->id_seccion."_0"; ?>" rows="3"
 			class="form-control"><?php echo ( (isset($observaciones[$seccion->id_seccion."_0"])) ? utf8_encode($observaciones[$seccion->id_seccion."_0"]['respuesta']) : ""); ?></textarea>

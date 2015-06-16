@@ -1,0 +1,32 @@
+table {
+	width: 100%;
+}
+
+th, td {
+	width: 10%;
+	text-align: center;
+}
+
+th:first-of-type, td:first-of-type {
+	width: 50%;
+	text-align: left;
+}
+
+.resaltado td {
+	background-color: #E3E7ED;
+	font-weight: bold;
+}
+
+.total td {
+	background-color: #627899;
+	color: #FFFFFF;
+}
+
+.total-claro td {
+	background-color: #a3b4c9;
+	font-weight: bold;
+}
+
+.total-claro td:first-of-type {
+	padding-left: 45px;
+}

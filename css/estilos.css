@@ -221,6 +221,12 @@ div.resultados {
 	font-weight: bold;
 }
 
+span.invalido {
+	display: block;
+	font-weight: bold;
+	text-align: center;
+}
+
 
 /* Estilos pantalla login */
 .loginContainer {
@@ -271,7 +277,7 @@ div.resultados {
 
 
 /* Estilos para los errores */
-select.error, textarea.error {
+select.error, textarea.error, input.error {
 	border-color: #FF0000;
 	color: #FF0000;
 }

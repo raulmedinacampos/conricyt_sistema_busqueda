@@ -10,7 +10,7 @@ body {
 }
 
 footer {
-	font-family: calibri, arial; sans-serif;
+	font-family: calibri, arial, sans-serif;
 	font-size: 8pt;
 	color: #646464;
 }
@@ -19,8 +19,20 @@ footer p {
 	text-align: center;
 }
 
-footer .numeracion {
+footer .finalizacion {
+	float: left;
+	width: 45%;
+	text-align: left;
+}
+
+footer .paginacion {
+	float: right;
+	width: 45%;
 	text-align: right;
+}
+
+footer .direccion {
+	clear: both;
 }
 
 table {
@@ -100,12 +112,35 @@ ol.subseccion li {
 	width: 65pt;
 }
 
+.dictamen {
+	margin-top: 30pt;
+	text-align: justify;
+}
+
+.encabezado {
+	font-size: 9pt;
+	text-align: center;
+	text-transform: uppercase; 
+}
+
+.fecha {
+	margin-bottom: 30pt;
+	font-size: 11pt;
+	text-align: right;
+}
+
 .fin {
 	clear: both;
 }
 
 .firmas {
 	padding-top: 120pt;
+}
+
+.firma-div {
+	float: left;
+	width: 31%;
+	padding: 120pt 5pt 0pt;
 }
 
 .firma {
@@ -120,9 +155,28 @@ ol.subseccion li {
 	text-align: center;
 }
 
-.firma .nombre {
+.firma .nombre, .firma-fallo .nombre {
 	font-size: 9pt;
 	font-weight: bold;
+}
+
+.firma-fallo {
+	margin: auto;
+	padding-top: 5pt;
+	border-top-width: 1pt;
+	border-top-style: solid;
+	border-top-color: #000000;
+	font-size: 8pt;
+	text-align: center;
+}
+
+.nota {
+	font-size: 7pt;
+}
+
+.nota-firma {
+	margin-top: 30pt;
+	font-size: 8pt;
 }
 
 .ponderacion {
@@ -166,6 +220,14 @@ ol.subseccion li {
 
 .ponderacion td.sombreado {
 	background-color: #E3E7ED;
+}
+
+.resumen th.izq {
+	padding-left: 10pt;
+}
+
+.resumen th.izq, .resumen td.izq {
+	text-align: left;
 }
 
 .titulo {

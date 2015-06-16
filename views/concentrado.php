@@ -1,6 +1,30 @@
 <link rel="stylesheet" href="../css/reporte.css" type="text/css" />
 
-<h3>Resultados de la evaluación</h3>
+<div class="titulo">
+	<h3 class="titulo col-sm-10 col-sm-offset-1">Evaluación de Propuestas Técnicas, de Servicios y Económicas</h3>
+	<div class="salir col-sm-1"><a href="/salir"><img src="../images/salida.png" />Salir</a></div>
+</div>
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">Inicio <span class="sr-only">(current)</span></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Ver resultados <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="detalle-evaluador">Detalle por evaluador</a></li>
+            <li><a href="concentrado">Resumen general</a></li>
+            <li><a href="resultado-propuesta-economica">Propuesta económica</a></li>
+          </ul>
+        </li>
+      </ul>
+
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<h3>Resultados. Detalle de la evaluación por rubro</h3>
 <table class="table table-condensed table-striped">
 	<tr>
 		<th>Rubro evaluado</th>
@@ -9,7 +33,7 @@
 			${"total_".$proveedor->id_proveedor} = 0;
 			${"t_".$proveedor->id_proveedor} = 0;
 		?>
-		<th><?php echo $proveedor->nombre; ?></th>
+		<th><?php echo $proveedor->nombre.($proveedor->estatus == 0 ? " *" : ""); ?></th>
 		<?php
 		}
 		?>
@@ -83,3 +107,5 @@
 		?>
 	</tr>
 </table>
+<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa ITMS GROUP INC., 
+por incumplir con los lineamientos del procedimiento de asignación.</p>

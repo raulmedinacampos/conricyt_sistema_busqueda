@@ -16,15 +16,6 @@ function validarFormulario() {
 		ignore: []
 	});
 	
-	$("#formEvaluacion textarea").each(function() {
-		$(this).rules('add', {
-			required: true,
-			messages: {
-				required: ""
-			}
-		});
-	});
-	
 	$("#formEvaluacion select").each(function() {
 		$(this).rules('add', {
 			required: true,
@@ -35,19 +26,28 @@ function validarFormulario() {
 	});
 	
 	$("#btnGuardar").click(function() {
+		$("#notificaciones .modal-title").html("Guardando datos");
+		$("#notificaciones .modal-body").html('<img style="display:block; margin:auto;" src="../images/loading.gif" />');
+		$("#notificaciones .modal-footer button").css("display", "none");
+		$("#notificaciones").modal('show');
 		$.post(
 				'guardarEvaluacion',
 				$("#formEvaluacion").serialize(),
 				function(data) {
 					$("#notificaciones .modal-title").html("Datos guardados");
 					$("#notificaciones .modal-body").html("La información de tu evaluación ha sido guardada.");
-					$("#notificaciones").modal('show');
+					$("#notificaciones .modal-footer button").css("display", "inline");
+					setTimeout(location.reload(), 2000);
 				}
 		);
 	})
 	
 	$("#btnFinalizar").click(function() {
 		if ( $("#formEvaluacion").valid() ) {
+			$("#notificaciones .modal-title").html("Finalizando evaluación");
+			$("#notificaciones .modal-body").html('<img style="display:block; margin:auto;" src="../images/loading.gif" />');
+			$("#notificaciones .modal-footer button").css("display", "none");
+			$("#notificaciones").modal('show');
 			$.post(
 					'finalizarEvaluacion',
 					$("#formEvaluacion").serialize(),
