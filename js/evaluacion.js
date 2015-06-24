@@ -37,7 +37,7 @@ function validarFormulario() {
 					$("#notificaciones .modal-title").html("Datos guardados");
 					$("#notificaciones .modal-body").html("La información de tu evaluación ha sido guardada.");
 					$("#notificaciones .modal-footer button").css("display", "inline");
-					setTimeout(location.reload(), 2000);
+					/*setTimeout(location.reload(), 2000);*/
 				}
 		);
 	})

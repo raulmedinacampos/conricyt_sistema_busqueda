@@ -24,6 +24,8 @@
   </div><!-- /.container-fluid -->
 </nav>
 
+<a href="imprimirDetalleEvaluador"><span class="btn btn-warning pull-right">Imprimir PDF</span></a>
+
 <h3>Resultados. Detalle de la evaluación por evaluador</h3>
 
 <table>

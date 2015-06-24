@@ -1,4 +1,6 @@
 <?php
+ini_set('memory_limit', '1024M');
+
 require 'flight/Flight.php';
 require_once 'conf.php';
 
@@ -143,7 +145,7 @@ Flight::route('POST /login/', function() {
 	$usuario = (isset($_POST['usuario'])) ? addslashes($_POST['usuario']) : "";
 	$password = (isset($_POST['password'])) ? addslashes($_POST['password']) : "";
 
-	$query = "SELECT id_usuario, login, tipo_usuario FROM usuario WHERE login = ? AND password = ? LIMIT 1";
+	$query = "SELECT id_usuario, login, tipo_usuario FROM usuario WHERE login = ? AND password = ? AND estatus = 1 LIMIT 1";
 	$stm = $con->prepare($query);
 	$stm->execute(array($usuario, $password));
 	$usr = $stm->fetchObject();
@@ -178,6 +180,11 @@ Flight::route('/', function() {
 		$con = Flight::db();
 		$respuesta = array();
 		$observaciones = "";
+		
+		$query = "SELECT id_usuario, grado, nombre, ap_paterno, ap_materno FROM usuario WHERE id_usuario = ? AND estatus = 1";
+		$stm = $con->prepare($query);
+		$stm->execute(array($_SESSION['id_usr']));
+		$usuario = $stm->fetchObject();
 		
 		$query = "SELECT id_evaluacion, fecha_finalizacion FROM evaluacion WHERE usuario = ? AND estatus > 0";
 		$stm = $con->prepare($query);
@@ -235,7 +242,7 @@ Flight::route('/', function() {
 		$stm->execute();
 		$subsecciones = $stm->fetchAll(PDO::FETCH_OBJ);
 		
-		$query = "SELECT id_proveedor, nombre, estatus FROM proveedor ORDER BY nombre";
+		$query = "SELECT id_proveedor, nombre, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 		$stm = $con->prepare($query);
 		$stm->execute();
 		$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
@@ -246,6 +253,7 @@ Flight::route('/', function() {
 		$preguntas = $stm->fetchAll(PDO::FETCH_OBJ);
 		
 		$datos = array(
+				'usuario'		=> $usuario,
 				'evaluacion'	=> $evaluacion,
 				'secciones'		=> $secciones,
 				'subsecciones'	=> $subsecciones,
@@ -267,8 +275,8 @@ Flight::route('/', function() {
 			$stm->execute();
 			$usuarios = $stm->fetchAll(PDO::FETCH_OBJ);
 			
-			$datos = array('usuarios' => $usuarios);
-			Flight::render('resultados', $datos);
+			//$datos = array('usuarios' => $usuarios);
+			Flight::render('evaluacion', $datos);
 		}
 		
 		/* Usuario Evaluador */
@@ -421,8 +429,25 @@ Flight::route('/guardarEvEco/', function () {
 	}
 });
 
+Flight::route('/evaluacion-tecnica/', function() {
+	session_start();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
+	
+	$con = Flight::db();
+	
+	Flight::render('header');
+	Flight::render('footer');
+});
+
 Flight::route('/evaluacion-economica/', function() {
 	session_start();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
 	
 	$con = Flight::db();
 	
@@ -521,14 +546,15 @@ Flight::route('/imprimirEvaluacion/[0-9]+', function() {
 	$stm->execute();
 	$subsecciones = $stm->fetchAll(PDO::FETCH_OBJ);
 	
-	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor ORDER BY nombre";
+	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 	$stm = $con->prepare($query);
 	$stm->execute();
 	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
 	
-	$query = "SELECT u.grado, u.nombre, u.ap_paterno, u.ap_materno, u.cargo, u.institucion FROM usuario u JOIN evaluacion e ON u.id_usuario = e.usuario WHERE u.estatus = 1";
+	$query = "SELECT u.grado, u.nombre, u.ap_paterno, u.ap_materno, u.cargo, u.institucion 
+			FROM usuario u JOIN evaluacion e ON u.id_usuario = e.usuario WHERE e.id_evaluacion = ? AND u.estatus = 1";
 	$stm = $con->prepare($query);
-	$stm->execute();
+	$stm->execute(array($id_evaluacion));
 	$evaluador = $stm->fetchObject();
 	
 	$query = "SELECT id_pregunta, pregunta, seccion, subseccion, titulo FROM pregunta WHERE estatus = 1 ORDER BY id_pregunta";
@@ -693,7 +719,7 @@ Flight::route('/imprimirEvaluacion/[0-9]+', function() {
 			}
 			$html .= '</tr>';
 			$html .= '<tr>';
-			$html .= '<td class="izq observaciones" colspan="'.(sizeof($proveedores)+1).'"><strong>Observaciones:</strong><br/>';
+			$html .= '<td class="izq observaciones" colspan="'.(sizeof($proveedores)+1).'"><strong>Comentarios:</strong><br/>';
 			$html .= str_replace("\n", "<br />", $observaciones[$seccion->id_seccion."_0"]['respuesta']);
 			$html .= '</td>';
 			$html .= '</tr>';
@@ -761,7 +787,7 @@ Flight::route('/imprimirEvaluacion/[0-9]+', function() {
 					}
 					$html .= '</tr>';
 					$html .= '<tr>';
-					$html .= '<td class="izq observaciones" colspan="'.(sizeof($proveedores)+1).'"><strong>Observaciones:</strong><br/>';
+					$html .= '<td class="izq observaciones" colspan="'.(sizeof($proveedores)+1).'"><strong>Comentarios:</strong><br/>';
 					$html .= str_replace("\n", "<br />", $observaciones[$seccion->id_seccion."_".$subseccion->id_subseccion]['respuesta']);
 					$html .= '</td>';
 					$html .= '</table>';
@@ -771,8 +797,7 @@ Flight::route('/imprimirEvaluacion/[0-9]+', function() {
 	}
 	
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'http://evaluacion.dev/css/pdf.css');
-	//curl_setopt($ch, CURLOPT_URL, 'http://convocatoria.conricyt.mx/css/pdf.css');
+	curl_setopt($ch, CURLOPT_URL, CSS_PDF);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	$stylesheet = curl_exec($ch);
 	curl_close($ch);
@@ -826,7 +851,7 @@ Flight::route('/imprimirFallo/', function() {
 	$stm->execute();
 	$dictamen = $stm->fetchObject();
 	
-	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor ORDER BY nombre";
+	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 	$stm = $con->prepare($query);
 	$stm->execute();
 	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
@@ -941,8 +966,7 @@ Flight::route('/imprimirFallo/', function() {
 	
 	require_once 'lib/mpdf60/mpdf.php';
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, 'http://evaluacion.dev/css/pdf.css');
-	//curl_setopt($ch, CURLOPT_URL, 'http://convocatoria.conricyt.mx/css/pdf.css');
+	curl_setopt($ch, CURLOPT_URL, CSS_PDF);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	$stylesheet = curl_exec($ch);
 	curl_close($ch);
@@ -963,8 +987,7 @@ Flight::route('/imprimirFallo/', function() {
 			Comisión de Desarrollo Tecnológico<br />
 			México, D.F., a 16 de junio de 2015</p>');
 	$html .= utf8_decode('<p class="encabezado">Procediminto de Asignación de Contrato de Prestación de Sevicio	para<br /> 
-			proveer el Sistema de Descubrimiento y el Servidor EZProxy para el Portal<br /> 
-			del CONRICYT</p>');
+			proveer el Sistema de Descubrimiento y el Servidor EZProxy para el Portal del CONRICYT</p>');
 	$html .= '<p>&nbsp;</p><h2 style="text-align:center;">FALLO FINAL</h2><p>&nbsp;</p>';
 	$html .= utf8_decode('<p>Con base en los resultados obtenidos de la evaluación de las Propuestas Técnicas, 
 			de Servicios y Económicas, mismos que a continuación se presentan</p>');
@@ -1001,8 +1024,11 @@ Flight::route('/imprimirFallo/', function() {
 	}
 	$html .= '</tr>';
 	$html .= '</table>';
-	$html .= '<p>&nbsp;</p><p>&nbsp;</p>';
+	$mpdf->WriteHTML($stylesheet, 1);
+	$mpdf->WriteHTML(utf8_encode($html));
 	
+	$mpdf->AddPage();
+	$html = '<h2 style="text-align:center;">FALLO FINAL</h2>';
 	$html .= utf8_decode('<h4>Resultados de la evaluación de las propuestas económicas</h4>');
 	$html .= '<table class="resumen">';
 	$html .= '<tr>';
@@ -1063,7 +1089,7 @@ Flight::route('/imprimirFallo/', function() {
 	}
 	$html .= '</table>';
 	
-	$html .= utf8_decode('<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa 
+	$html .= utf8_decode('<p class="nota">* No se procedió a evaluar la Propuesta Técnica, de Servicios y Económica de la empresa 
 			ITMS GROUP INC., por incumplir con los lineamientos del procedimiento de asignación.</p>');
 	
 	$html .= utf8_decode('<p class="dictamen">Los miembros de la Comisión de Desarrollo Tecnológico del Consorcio Nacional de 
@@ -1080,6 +1106,11 @@ Flight::route('/imprimirFallo/', function() {
 		$html .= '<p>Comentarios: <br />'.$dictamen->comentarios.'</p>';
 	}
 	
+	$mpdf->WriteHTML($stylesheet, 1);
+	$mpdf->WriteHTML(utf8_encode($html));
+	
+	$mpdf->AddPage();	
+	$html = '<h2 style="text-align:center;">FALLO FINAL</h2>';
 	$html .= '<div>';
 	
 	foreach ( $evaluadores as $evaluador ) {
@@ -1101,8 +1132,507 @@ Flight::route('/imprimirFallo/', function() {
 	exit();
 });
 
-Flight::route('/concentrado/', function() {
+Flight::route('/imprimirResumen/', function() {
+	session_start();
+
+	if ( $_SESSION['tipo_usuario'] != 1 ) {
+		Flight::redirect('/');
+	}
+
 	$con = Flight::db();
+
+$query = "SELECT id_seccion, nombre FROM seccion WHERE estatus = 1 ORDER BY id_seccion";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$secciones = $stm->fetchAll(PDO::FETCH_OBJ);
+	
+	$secciones_arr = array();
+	
+	foreach ($secciones as $seccion ) {
+		$query = "SELECT COUNT(*) AS total FROM subseccion WHERE seccion = ? AND estatus = 1";
+		$stm = $con->prepare($query);
+		$stm->execute(array($seccion->id_seccion));
+		$row = $stm->fetchObject();
+		$sb = ( $row->total > 0 ) ? 1 : 0;
+		$dato = new stdClass();
+		$dato->id_seccion = $seccion->id_seccion;
+		$dato->nombre = $seccion->nombre;
+		$dato->sub = $sb;
+		$secciones_arr[] = $dato;
+	}
+	
+	$secciones = $secciones_arr;
+	
+	$query = "SELECT id_subseccion, nombre, seccion FROM subseccion WHERE estatus = 1 ORDER BY id_subseccion";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$subsecciones = $stm->fetchAll(PDO::FETCH_OBJ);
+	
+	$query = "SELECT id_proveedor, nombre, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
+	
+	$resultados = array();
+	
+	foreach ( $secciones as $seccion ) {
+		if ( !$seccion->sub ) {
+			foreach ( $proveedores as $proveedor ) {
+				$resultados[$seccion->id_seccion.'_0_'.$proveedor->id_proveedor] = 0;
+			}
+		} else {
+			foreach ( $subsecciones as $subseccion ) {
+				foreach ( $proveedores as $proveedor ) {
+					$resultados[$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor] = 0;
+				}
+			}
+		}
+	}
+	
+	foreach ( $secciones as $seccion ) {
+		if ( !$seccion->sub ) {
+			foreach ( $proveedores as $proveedor ) {
+				$query = "SELECT r.id_respuesta, r.respuesta, r.evaluacion, r.proveedor, p.id_pregunta, p.seccion, p.subseccion 
+						FROM respuesta r 
+						JOIN pregunta p ON r.pregunta = p.id_pregunta 
+						WHERE p.seccion = ? AND p.subseccion IS NULL AND r.proveedor = ?";
+				$stm = $con->prepare($query);
+				$stm->execute(array($seccion->id_seccion, $proveedor->id_proveedor));
+				$res = $stm->fetchAll(PDO::FETCH_OBJ);
+				
+				foreach ( $res as $val ) {
+					switch ( $val->respuesta ) {
+						case 'S':
+							$resultados[$seccion->id_seccion.'_0_'.$proveedor->id_proveedor] += 2;
+							break;
+						case 'P':
+							$resultados[$seccion->id_seccion.'_0_'.$proveedor->id_proveedor] += 1;
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		} else {
+			foreach ( $subsecciones as $subseccion ) {
+				foreach ( $proveedores as $proveedor ) {
+					$query = "SELECT r.id_respuesta, r.respuesta, r.evaluacion, r.proveedor, p.id_pregunta, p.seccion, p.subseccion
+						FROM respuesta r
+						JOIN pregunta p ON r.pregunta = p.id_pregunta
+						WHERE p.seccion = ? AND p.subseccion = ? AND r.proveedor = ?";
+					$stm = $con->prepare($query);
+					$stm->execute(array($seccion->id_seccion, $subseccion->id_subseccion, $proveedor->id_proveedor));
+					$res = $stm->fetchAll(PDO::FETCH_OBJ);
+					
+					foreach ( $res as $val ) {
+						switch ( $val->respuesta ) {
+							case 'S':
+								$resultados[$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor] += 2;
+								break;
+							case 'P':
+								$resultados[$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor] += 1;
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	require_once 'lib/mpdf60/mpdf.php';
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, CSS_PDF);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$stylesheet = curl_exec($ch);
+	curl_close($ch);
+
+	$header = '<img id="logo-conricyt" src="../images/ch_logo1.png"/><img id="logo-conacyt" src="../images/ch_logo2.png"/>';
+	$footer = '<footer><div class="finalizacion">'.formatearFecha($dictamen->fecha).'</div><div class="paginacion">Página {PAGENO} de {nbpg}</div>';
+	$footer .= '<p class="direccion"><strong>Oficina del Consorcio Nacional de Recursos de Información Científica y Tecnológica</strong><br />';
+	$footer .= 'Av. Insurgentes Sur 1582, Col. Crédito Constructor, Deleg. Benito Juárez, C.P. 03940 ';
+	$footer .= 'México D.F. – Tel: 5322 7700 ext  4020 a la 4026</p></footer>';
+
+	$mpdf = new mPDF('utf-8', 'Letter', 0, 'Arial', 13, 13, 35, 25);
+
+	$mpdf->SetHTMLHeader($header);
+	$mpdf->SetHTMLFooter($footer);
+
+	$html = '';
+	$html .= utf8_decode('<h4>Resultados. Detalle de la evaluación por rubro</h4>');
+	$html .= '<table class="resumen">';
+	$html .= '<tr>';
+	$html .= '<th class="izq">Rubro evaluado</th>';
+	foreach ( $proveedores as $proveedor ) {
+		${"t_".$proveedor->id_proveedor} = 0;
+		$html .= '<th>'.$proveedor->nombre.($proveedor->estatus == 0 ? " *" : "").'</th>';
+	}
+	$html .= '</tr>';
+	
+	$arr_letras = array("", "a", "b", "c", "d", "e");
+	$arr_romanos = array("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII");
+	foreach ( $secciones as $seccion ) {
+		$html .= '<tr>';
+		$html .= '<td class="izq" '.($seccion->sub  ? 'colspan="'.(sizeof($proveedores)+1).'"' : "").'>';
+		$html .= '<span>'.$arr_letras[$seccion->id_seccion].". ".$seccion->nombre.'</span></td>';
+		
+		foreach ( $proveedores as $proveedor ) {
+			$val = 0;
+			if ( isset($resultados[$seccion->id_seccion.'_0_'.$proveedor->id_proveedor]) ) {
+				$val = $resultados[$seccion->id_seccion.'_0_'.$proveedor->id_proveedor];
+			}
+			${"t_".$proveedor->id_proveedor} += $val;
+			
+			if ( !$seccion->sub ) {
+				if ( $proveedor->estatus > 0 ) {
+					$html .= '<td>'.$val.'</td>';
+				} else {
+					$html .= utf8_decode('<td><span class="invalido">Inválido</span></td>');
+				}
+			}
+		}
+		$html .= '</tr>';
+	
+		if ( $seccion->sub ) {
+			$ss = 1;
+			foreach ( $subsecciones as $subseccion ) {
+				if ( $subseccion->seccion == $seccion->id_seccion ) {
+					$html .= '<tr><td class="izq">';
+					$html .= '<span>'.$arr_romanos[($ss++)].". ".$subseccion->nombre.'</span></td>';
+					
+					foreach ( $proveedores as $proveedor ) {
+						$val_s = 0;
+						if ( isset($resultados[$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor]) ) {
+							$val_s = $resultados[$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor];
+						}
+						${"t_".$proveedor->id_proveedor} += $val_s;
+	
+						if ( $proveedor->estatus > 0 ) {
+							$html .= '<td>'.$val_s.'</td>';
+						} else {
+							$html .= utf8_decode('<td><span class="invalido">Inválido</span></td>');
+						}
+	
+					}
+					$html .= '</tr>';
+				}
+			}
+		}
+	}
+	
+	$html .= '<tr>';
+	$html .= '<td class="izq puntos">Total de puntos:</td>';
+	foreach ( $proveedores as $proveedor ) {
+		if ( $proveedor->estatus > 0 ) {
+			$html .= '<td class="puntos">'.${"t_".$proveedor->id_proveedor}.'</td>';
+		} else {
+			$html .= utf8_decode('<td class="puntos">Inválido</td>');
+		}
+	}
+	$html .= '</tr>';
+	
+	$html .= '</table>';
+
+	$html .= utf8_decode('<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa
+		ITMS GROUP INC., por incumplir con los lineamientos del procedimiento de asignación.</p>');
+
+	$mpdf->WriteHTML($stylesheet, 1);
+	$mpdf->WriteHTML(utf8_encode($html));
+
+	$mpdf->Output('resumen.pdf', 'D');
+	exit();
+});
+
+Flight::route('/imprimirDetalleEvaluador/', function() {
+	session_start();
+
+	if ( $_SESSION['tipo_usuario'] != 1 ) {
+		Flight::redirect('/');
+	}
+
+	$con = Flight::db();
+
+$query = "SELECT u.id_usuario, u.grado, u.nombre, u.ap_paterno, u.ap_materno, e.id_evaluacion 
+			FROM usuario u LEFT JOIN evaluacion e ON u.id_usuario = e.usuario 
+			WHERE u.tipo_usuario = 2 AND u.estatus = 1 
+			ORDER BY u.nombre, u.ap_paterno, u.ap_materno";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$evaluadores = $stm->fetchAll(PDO::FETCH_OBJ);
+	
+	$query = "SELECT id_seccion, nombre FROM seccion WHERE estatus = 1 ORDER BY id_seccion";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$secciones = $stm->fetchAll(PDO::FETCH_OBJ);
+
+	$secciones_arr = array();
+
+	foreach ($secciones as $seccion ) {
+		$query = "SELECT COUNT(*) AS total FROM subseccion WHERE seccion = ? AND estatus = 1";
+		$stm = $con->prepare($query);
+		$stm->execute(array($seccion->id_seccion));
+		$row = $stm->fetchObject();
+		$sb = ( $row->total > 0 ) ? 1 : 0;
+		$dato = new stdClass();
+		$dato->id_seccion = $seccion->id_seccion;
+		$dato->nombre = $seccion->nombre;
+		$dato->sub = $sb;
+		$secciones_arr[] = $dato;
+	}
+
+	$secciones = $secciones_arr;
+
+	$query = "SELECT id_subseccion, nombre, seccion FROM subseccion WHERE estatus = 1 ORDER BY id_subseccion";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$subsecciones = $stm->fetchAll(PDO::FETCH_OBJ);
+
+	$query = "SELECT id_proveedor, nombre, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
+	$stm = $con->prepare($query);
+	$stm->execute();
+	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
+
+	$totales = array();
+	
+	foreach ( $evaluadores as $evaluador ) {
+		foreach ( $proveedores as $proveedor ) {
+			$totales[$evaluador->id_usuario][$proveedor->id_proveedor] = 0;
+		}
+	}
+	
+	foreach ( $evaluadores as $evaluador ) {
+		foreach ( $proveedores as $proveedor ) {
+			$query = "SELECT r.id_respuesta, r.respuesta, r.evaluacion, r.proveedor
+						FROM respuesta r
+						JOIN evaluacion e ON r.evaluacion = e.id_evaluacion
+						WHERE e.usuario = ? AND r.proveedor = ?";
+			$stm = $con->prepare($query);
+			$stm->execute(array($evaluador->id_usuario, $proveedor->id_proveedor));
+			$res = $stm->fetchAll(PDO::FETCH_OBJ);
+				
+			foreach ( $res as $val ) {
+				switch ( $val->respuesta ) {
+					case 'S':
+						$totales[$evaluador->id_usuario][$proveedor->id_proveedor] += 2;
+						break;
+					case 'P':
+						$totales[$evaluador->id_usuario][$proveedor->id_proveedor] += 1;
+						break;
+					default:
+						break;
+				}
+			}
+		}
+	}
+	
+	$resultados = array();
+	
+	foreach ( $evaluadores as $evaluador ) {
+		foreach ( $secciones as $seccion ) {
+			if ( !$seccion->sub ) {
+				foreach ( $proveedores as $proveedor ) {
+					$resultados[$evaluador->id_usuario][$seccion->id_seccion.'_0_'.$proveedor->id_proveedor] = 0;
+				}
+			} else {
+				foreach ( $subsecciones as $subseccion ) {
+					foreach ( $proveedores as $proveedor ) {
+						$resultados[$evaluador->id_usuario][$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor] = 0;
+					}
+				}
+			}
+		}
+	}
+	
+	foreach ( $evaluadores as $evaluador ) {
+		foreach ( $secciones as $seccion ) {
+			if ( !$seccion->sub ) {
+				foreach ( $proveedores as $proveedor ) {
+					$query = "SELECT r.id_respuesta, r.respuesta, r.evaluacion, r.proveedor, p.id_pregunta, p.seccion, p.subseccion
+						FROM respuesta r
+						JOIN pregunta p ON r.pregunta = p.id_pregunta
+						WHERE r.evaluacion = ? AND p.seccion = ? AND p.subseccion IS NULL AND r.proveedor = ?";
+					$stm = $con->prepare($query);
+					$stm->execute(array($evaluador->id_evaluacion, $seccion->id_seccion, $proveedor->id_proveedor));
+					$res = $stm->fetchAll(PDO::FETCH_OBJ);
+	
+					foreach ( $res as $val ) {
+						switch ( $val->respuesta ) {
+							case 'S':
+								$resultados[$evaluador->id_usuario][$seccion->id_seccion.'_0_'.$proveedor->id_proveedor] += 2;
+								break;
+							case 'P':
+								$resultados[$evaluador->id_usuario][$seccion->id_seccion.'_0_'.$proveedor->id_proveedor] += 1;
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			} else {
+				foreach ( $subsecciones as $subseccion ) {
+					foreach ( $proveedores as $proveedor ) {
+						$query = "SELECT r.id_respuesta, r.respuesta, r.evaluacion, r.proveedor, p.id_pregunta, p.seccion, p.subseccion
+						FROM respuesta r
+						JOIN pregunta p ON r.pregunta = p.id_pregunta
+						WHERE r.evaluacion = ? AND p.seccion = ? AND p.subseccion = ? AND r.proveedor = ?";
+						$stm = $con->prepare($query);
+						$stm->execute(array($evaluador->id_evaluacion, $seccion->id_seccion, $subseccion->id_subseccion, $proveedor->id_proveedor));
+						$res = $stm->fetchAll(PDO::FETCH_OBJ);
+							
+						foreach ( $res as $val ) {
+							switch ( $val->respuesta ) {
+								case 'S':
+									$resultados[$evaluador->id_usuario][$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor] += 2;
+									break;
+								case 'P':
+									$resultados[$evaluador->id_usuario][$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor] += 1;
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	require_once 'lib/mpdf60/mpdf.php';
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, CSS_PDF);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$stylesheet = curl_exec($ch);
+	curl_close($ch);
+
+	$header = '<img id="logo-conricyt" src="../images/ch_logo1.png"/><img id="logo-conacyt" src="../images/ch_logo2.png"/>';
+	$footer = '<footer><div class="finalizacion">'.formatearFecha($dictamen->fecha).'</div><div class="paginacion">Página {PAGENO} de {nbpg}</div>';
+	$footer .= '<p class="direccion"><strong>Oficina del Consorcio Nacional de Recursos de Información Científica y Tecnológica</strong><br />';
+	$footer .= 'Av. Insurgentes Sur 1582, Col. Crédito Constructor, Deleg. Benito Juárez, C.P. 03940 ';
+	$footer .= 'México D.F. – Tel: 5322 7700 ext  4020 a la 4026</p></footer>';
+
+	$mpdf = new mPDF('utf-8', 'Letter', 0, 'Arial', 13, 13, 35, 25);
+
+	$mpdf->SetHTMLHeader($header);
+	$mpdf->SetHTMLFooter($footer);
+
+	$html = '';
+	$html .= utf8_decode('<h4>Resultados. Detalle de la evaluación por evaluador</h4>');
+	
+	foreach ( $proveedores as $proveedor ) {
+		${"total_".$proveedor->id_proveedor} = 0;
+	}
+	
+	foreach ( $evaluadores as $evaluador ) {
+		$html .= '<h3>'.trim($evaluador->grado." ".$evaluador->nombre." ".$evaluador->ap_paterno." ".$evaluador->ap_materno).'</h3>';
+		$html .= '<table class="resumen">';
+		$html .= '<tr>';
+		$html .= '<th class="izq">Rubro evaluado</th>';
+		foreach ( $proveedores as $proveedor ) {
+			${"t_".$proveedor->id_proveedor} = 0;
+			$html .= '<th>'.$proveedor->nombre.($proveedor->estatus == 0 ? " *" : "").'</th>';
+		}
+		$html .= '</tr>';
+	
+		$arr_letras = array("", "a", "b", "c", "d", "e");
+		$arr_romanos = array("", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII");
+		foreach ( $secciones as $seccion ) {
+			$html .= '<tr>';
+			$html .= '<td class="izq" '.($seccion->sub  ? 'colspan="'.(sizeof($proveedores)+1).'"' : "").'>';
+			$html .= '<span>'.$arr_letras[$seccion->id_seccion].". ".$seccion->nombre.'</span></td>';
+	
+			foreach ( $proveedores as $proveedor ) {
+				$val = 0;
+				if ( isset($resultados[$evaluador->id_usuario][$seccion->id_seccion.'_0_'.$proveedor->id_proveedor]) ) {
+					$val = $resultados[$evaluador->id_usuario][$seccion->id_seccion.'_0_'.$proveedor->id_proveedor];
+				}
+				${"t_".$proveedor->id_proveedor} += $val;
+					
+				if ( !$seccion->sub ) {
+					if ( $proveedor->estatus > 0 ) {
+						$html .= '<td>'.$val.'</td>';
+					} else {
+						$html .= utf8_decode('<td><span class="invalido">Inválido</span></td>');
+					}
+				}
+			}
+			$html .= '</tr>';
+	
+			if ( $seccion->sub ) {
+				$ss = 1;
+				foreach ( $subsecciones as $subseccion ) {
+					if ( $subseccion->seccion == $seccion->id_seccion ) {
+						$html .= '<tr><td class="izq">';
+						$html .= '<span>'.$arr_romanos[($ss++)].". ".$subseccion->nombre.'</span></td>';
+							
+						foreach ( $proveedores as $proveedor ) {
+							$val_s = 0;
+							if ( isset($resultados[$evaluador->id_usuario][$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor]) ) {
+								$val_s = $resultados[$evaluador->id_usuario][$seccion->id_seccion.'_'.$subseccion->id_subseccion.'_'.$proveedor->id_proveedor];
+							}
+							${"t_".$proveedor->id_proveedor} += $val_s;
+	
+							if ( $proveedor->estatus > 0 ) {
+								$html .= '<td>'.$val_s.'</td>';
+							} else {
+								$html .= utf8_decode('<td><span class="invalido">Inválido</span></td>');
+							}
+	
+						}
+						$html .= '</tr>';
+					}
+				}
+			}
+		}
+	
+		$html .= '<tr>';
+		$html .= '<td class="izq puntos">Total de puntos:</td>';
+		foreach ( $proveedores as $proveedor ) {
+			if ( $proveedor->estatus > 0 ) {
+				${"total_".$proveedor->id_proveedor} += ${"t_".$proveedor->id_proveedor};
+				$html .= '<td class="puntos">'.${"t_".$proveedor->id_proveedor}.'</td>';
+			} else {
+				$html .= utf8_decode('<td class="puntos">Inválido</td>');
+			}
+		}
+		$html .= '</tr>';
+	
+		$html .= '</table>';
+	}
+	
+	$html .= '<p>&nbsp;</p>';
+	$html .= '<table class="resumen">';
+	$html .= '<tr>';
+	$html .= '<td class="izq puntos">Total de puntos:</td>';
+	
+	foreach ( $proveedores as $proveedor ) {
+		if ( $proveedor->estatus > 0 ) {
+			$html .= '<td class="puntos">'.${"total_".$proveedor->id_proveedor}.'</td>';
+		} else {
+			$html .= utf8_decode('<td class="puntos"><span class="invalido">Inválido</span></td>');
+		}
+	}
+	
+	$html .= '</tr></table>';
+
+	$html .= utf8_decode('<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa
+	ITMS GROUP INC., por incumplir con los lineamientos del procedimiento de asignación.</p>');
+
+	$mpdf->WriteHTML($stylesheet, 1);
+	$mpdf->WriteHTML(utf8_encode($html));
+
+	$mpdf->Output('resumen.pdf', 'D');
+	exit();
+});
+
+Flight::route('/concentrado/', function() {
+	session_start();
+	
+	$con = Flight::db();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
 	
 	$id_evaluacion = 10;
 	
@@ -1133,7 +1663,7 @@ Flight::route('/concentrado/', function() {
 	$stm->execute();
 	$subsecciones = $stm->fetchAll(PDO::FETCH_OBJ);
 	
-	$query = "SELECT id_proveedor, nombre, estatus FROM proveedor ORDER BY nombre";
+	$query = "SELECT id_proveedor, nombre, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 	$stm = $con->prepare($query);
 	$stm->execute();
 	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
@@ -1266,6 +1796,11 @@ Flight::route('/propuesta-desglozada/', function() {
 
 Flight::route('/detalle-evaluador/', function() {
 	session_start();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
+	
 	$con = Flight::db();
 	
 	$query = "SELECT u.id_usuario, u.grado, u.nombre, u.ap_paterno, u.ap_materno, e.id_evaluacion 
@@ -1303,7 +1838,7 @@ Flight::route('/detalle-evaluador/', function() {
 	$stm->execute();
 	$subsecciones = $stm->fetchAll(PDO::FETCH_OBJ);
 
-	$query = "SELECT id_proveedor, nombre, estatus FROM proveedor ORDER BY nombre";
+	$query = "SELECT id_proveedor, nombre, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 	$stm = $con->prepare($query);
 	$stm->execute();
 	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
@@ -1429,9 +1964,14 @@ Flight::route('/detalle-evaluador/', function() {
 
 Flight::route('/resultado-propuesta-economica/', function() {
 	session_start();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
+	
 	$con = Flight::db();
 
-	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor ORDER BY nombre";
+	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 	$stm = $con->prepare($query);
 	$stm->execute();
 	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
@@ -1560,9 +2100,14 @@ Flight::route('/resultado-propuesta-economica/', function() {
 
 Flight::route('/resumen-general/', function() {
 	session_start();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
+	
 	$con = Flight::db();
 
-	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor ORDER BY nombre";
+	$query = "SELECT id_proveedor, nombre, abreviatura, estatus FROM proveedor WHERE estatus = 1 ORDER BY nombre";
 	$stm = $con->prepare($query);
 	$stm->execute();
 	$proveedores = $stm->fetchAll(PDO::FETCH_OBJ);
@@ -1691,6 +2236,10 @@ Flight::route('/resumen-general/', function() {
 
 Flight::route('/guardarDictamen/', function() {
 	session_start();
+	
+	if ( !$_SESSION ) {
+		Flight::redirect('/');
+	}
 	
 	$fecha = date('Y-m-d H:i:s');
 	$proveedor = (isset($_POST['proveedor'])) ? $_POST['proveedor'] : "";

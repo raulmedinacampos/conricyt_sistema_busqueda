@@ -1,5 +1,5 @@
 <?php
-if ( $evaluacion->fecha_finalizacion ) {
+if ( $evaluacion && $evaluacion->fecha_finalizacion ) {
 ?>
 <script type="text/javascript">
 $(function() {
@@ -11,9 +11,17 @@ $(function() {
 ?>
 
 <div class="titulo">
-	<h3 class="titulo col-sm-10 col-sm-offset-1">Evaluación de Propuestas Técnicas, de Servicios y Económicas</h3>
+	<h3 class="titulo col-sm-10 col-sm-offset-1">Evaluación de Propuestas Técnicas y de Servicios</h3>
 	<div class="salir col-sm-1"><a href="/salir"><img src="../images/salida.png" />Salir</a></div>
 </div>
+
+<?php
+if ( $_SESSION['tipo_usuario'] == 2 && $usuario ) {
+?>
+<h4>Bienvenido(a) <?php echo utf8_encode(trim($usuario->grado." ".$usuario->nombre." ".$usuario->ap_paterno)); ?></h4>
+<?php
+}
+?>
 
 <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -175,8 +183,6 @@ $(function() {
 											<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "P") {echo 'selected="selected"';}?>>Parcialmente</option>
 										<option value="N"
 											<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "N") {echo 'selected="selected"';}?>>No</option>
-										<option value="D"
-											<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "D") {echo 'selected="selected"';}?>>Desconocido</option>
 									</select>
 									<input type="hidden" 
 										id="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
@@ -307,8 +313,6 @@ $(function() {
 								<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "P") {echo 'selected="selected"';}?>>Parcialmente</option>
 							<option value="N"
 								<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "N") {echo 'selected="selected"';}?>>No</option>
-							<option value="D"
-								<?php if(isset($respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta']) && $respuesta[$pregunta->id_pregunta."_".$proveedor->id_proveedor]['respuesta'] == "D") {echo 'selected="selected"';}?>>Desconocido</option>
 					</select>
 					<input type="hidden" 
 						id="hdnc_<?php echo $pregunta->id_pregunta."_".$proveedor->id_proveedor; ?>" 
@@ -364,7 +368,7 @@ $(function() {
 
 	<div class="botones">
 	<?php
-	if ( !$evaluacion->fecha_finalizacion ) {
+	if ( !$evaluacion || !$evaluacion->fecha_finalizacion ) {
 	?>
 		<input type="button" id="btnGuardar" value="Guardar cambios" class="btn btn-primary" /> 
 		<input type="button" id="btnFinalizar" value="Finalizar evaluación" class="btn btn-primary" />

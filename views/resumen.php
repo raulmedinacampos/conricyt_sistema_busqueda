@@ -100,8 +100,6 @@ $(function() {
 		?>
 	</tr>
 </table>
-<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa ITMS GROUP INC., 
-por incumplir con los lineamientos del procedimiento de asignación.</p>
 
 <h3>Resultados de la evaluación de las propuestas económicas</h3>
 <table class="table table-condensed table-striped">
@@ -136,8 +134,6 @@ por incumplir con los lineamientos del procedimiento de asignación.</p>
   }
   ?>
 </table>
-<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa ITMS GROUP INC., 
-por incumplir con los lineamientos del procedimiento de asignación.</p>
 
 <h3>Cuadro resumen de costos por año y empresa</h3>
 <table class="table table-condensed table-striped">
@@ -190,7 +186,7 @@ por incumplir con los lineamientos del procedimiento de asignación.</p>
 	<td>
 	<?php
 	if ( $monto->estatus > 0 ) {
-		echo $monto->comentarios;
+		echo utf8_encode($monto->comentarios);
 	} else {
 		echo '<span class="invalido">Inválido</span>';
 	}
@@ -204,7 +200,7 @@ por incumplir con los lineamientos del procedimiento de asignación.</p>
   }
   ?>
 </table>
-<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa ITMS GROUP INC., 
+<p class="nota">* No se procedió a evaluar la Propuesta Técnica, de Servicio y Económica de la empresa ITMS GROUP INC., 
 por incumplir con los lineamientos del procedimiento de asignación.</p>
 
 <form id="formDictamen" name="formDictamen" method="post" action="guardarDictamen">
@@ -215,7 +211,7 @@ por incumplir con los lineamientos del procedimiento de asignación.</p>
 		foreach ( $proveedores as $proveedor ) {
 			if ( $proveedor->estatus > 0) {
 		?>
-			<option value="<?php echo $proveedor->id_proveedor; ?>"><?php echo $proveedor->nombre; ?></option>
+			<option value="<?php echo $proveedor->id_proveedor; ?>"><?php echo utf8_encode($proveedor->abreviatura); ?></option>
 		<?php
 			}
 		}

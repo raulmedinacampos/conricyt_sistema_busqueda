@@ -24,6 +24,8 @@
   </div><!-- /.container-fluid -->
 </nav>
 
+<a href="imprimirResumen"><span class="btn btn-warning pull-right">Imprimir PDF</span></a>
+
 <h3>Resultados. Detalle de la evaluación por rubro</h3>
 <table class="table table-condensed table-striped">
 	<tr>
@@ -57,7 +59,15 @@
 				
 				if ( !$seccion->sub ) {
 			?>
-			<td><?php echo $val; ?></td>
+			<td>
+			<?php
+			if ( $proveedor->estatus > 0 ) {
+				echo $val;
+			} else {
+				echo '<span class="invalido">Inválido</span>';
+			}
+			?>
+			</td>
 			<?php
 				}
 			}
@@ -83,7 +93,15 @@
 							}
 							${"t_".$proveedor->id_proveedor} += $val_s;
 						?>
-						<td><?php echo $val_s; ?></td>
+						<td>
+						<?php
+						if ( $proveedor->estatus > 0 ) {
+							echo $val_s;
+						} else {
+							echo '<span class="invalido">Inválido</span>';
+						}
+						?>
+						</td>
 						<?php
 						}
 						?>
@@ -100,9 +118,13 @@
 		<td>Total de puntos:</td>
 		<?php
 		foreach ( $proveedores as $proveedor ) {
+			if ( $proveedor->estatus > 0 ) {
 		?>
 		<td><?php echo ${"t_".$proveedor->id_proveedor}; ?></td>
 		<?php
+			} else {
+				echo '<td><span class="invalido">Inválido</span></td>';
+			}
 		}
 		?>
 	</tr>

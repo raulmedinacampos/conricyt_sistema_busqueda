@@ -80,8 +80,6 @@ $(function() {
   }
   ?>
 </table>
-<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa ITMS GROUP INC., 
-por incumplir con los lineamientos del procedimiento de asignación.</p>
 
 <h3>Cuadro resumen de costos por año y empresa</h3>
 <table class="table table-condensed table-striped">
@@ -148,5 +146,5 @@ por incumplir con los lineamientos del procedimiento de asignación.</p>
   }
   ?>
 </table>
-<p class="nota">* No se procedió a evaluar la Propuesta Técnica y de Servicio de la empresa ITMS GROUP INC., 
+<p class="nota">* No se procedió a evaluar la Propuesta Económica de la empresa ITMS GROUP INC., 
 por incumplir con los lineamientos del procedimiento de asignación.</p>
